@@ -2,7 +2,6 @@ from django.shortcuts import render
 from .forms import SurveyForm
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-# Загрување на LLM модел (мал)
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
 model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
 
@@ -12,7 +11,6 @@ def survey_view(request):
         if form.is_valid():
             user_text = form.cleaned_data["description"]
 
-            # Подготовка на prompt
             prompt = f"""
             Classify the person as Introvert or Extrovert based on the following text.
             Answer only 'Introvert' or 'Extrovert', followed by a short reason.
@@ -42,7 +40,6 @@ def survey_view(request):
             {user_text}
             """
 
-            # Генерирање на предвидување
             inputs = tokenizer(prompt, return_tensors="pt")
             outputs = model.generate(**inputs, max_new_tokens=100, do_sample=True, top_k=50, top_p=0.95)
             prediction = tokenizer.decode(outputs[0], skip_special_tokens=True)
